@@ -3,12 +3,9 @@ streamlit
 pandas
 plotly
 openpyxl
-chromadb
+chromadb==0.4.24
 sentence-transformers
 pypdf
-langchain
-langchain-anthropic
-langchain-community
 duckduckgo-search
 requests
 beautifulsoup4
