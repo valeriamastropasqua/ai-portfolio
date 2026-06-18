@@ -3,8 +3,7 @@ streamlit
 pandas
 plotly
 openpyxl
-chromadb==0.4.24
-sentence-transformers
+numpy
 pypdf
 duckduckgo-search
 requests
