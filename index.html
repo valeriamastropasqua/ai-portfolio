@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valeria Mastropasqua — AI Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0D0D0F;
+    --bg-card: #131316;
+    --bg-card2: #1A1A1F;
+    --border: rgba(255,255,255,0.07);
+    --border-accent: rgba(255,255,255,0.13);
+    --text: #F0EFF4;
+    --text-muted: #8B8A96;
+    --text-dim: #4E4D59;
+    --accent: #7C6FF7;
+    --accent-soft: rgba(124,111,247,0.12);
+    --accent-glow: rgba(124,111,247,0.25);
+    --green: #3FCF8E;
+    --green-soft: rgba(63,207,142,0.1);
+    --amber: #F5A623;
+    --amber-soft: rgba(245,166,35,0.1);
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2.5rem;
+    height: 60px;
+    background: rgba(13,13,15,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-decoration: none;
+    letter-spacing: 0.03em;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  /* LAYOUT */
+  main { padding-top: 60px; }
+  section { padding: 7rem 2.5rem; max-width: 1100px; margin: 0 auto; }
+
+  /* HERO */
+  .hero {
+    min-height: calc(100vh - 60px);
+    display: flex; flex-direction: column; justify-content: center;
+    padding-top: 5rem; padding-bottom: 5rem;
+    position: relative;
+  }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 12px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border: 1px solid rgba(124,111,247,0.2);
+    border-radius: 100px;
+    padding: 5px 14px;
+    margin-bottom: 2rem;
+    width: fit-content;
+  }
+  .hero-tag::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  .hero h1 {
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    font-weight: 300;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.2em;
+  }
+  .hero h1 strong {
+    font-weight: 600;
+    background: linear-gradient(135deg, #7C6FF7 0%, #A78BFA 50%, #3FCF8E 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-sub {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    color: var(--text-muted);
+    max-width: 580px;
+    margin-top: 1.5rem;
+    margin-bottom: 2.5rem;
+    line-height: 1.8;
+  }
+  .hero-cta {
+    display: flex; gap: 1rem; flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 22px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover { background: #6B5EE6; transform: translateY(-1px); }
+  .btn-outline {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border-accent);
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+  .hero-stats {
+    display: flex; gap: 3rem; margin-top: 4rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .stat-num {
+    font-family: var(--mono);
+    font-size: 2rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .stat-num span { color: var(--accent); }
+  .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; letter-spacing: 0.04em; }
+
+  /* SECTION HEADERS */
+  .section-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  .section-title {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    margin-bottom: 3.5rem;
+    color: var(--text);
+  }
+  .section-title strong { font-weight: 600; }
+
+  /* ABOUT */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 5rem;
+    align-items: start;
+  }
+  .about-text p { color: var(--text-muted); margin-bottom: 1.2rem; line-height: 1.9; }
+  .about-text p:last-child { margin-bottom: 0; }
+  .about-text strong { color: var(--text); font-weight: 500; }
+
+  .about-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+  .about-card-title {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--text-dim); letter-spacing: 0.1em;
+    text-transform: uppercase; margin-bottom: 1.2rem;
+  }
+  .edu-item { margin-bottom: 1.2rem; padding-bottom: 1.2rem; border-bottom: 1px solid var(--border); }
+  .edu-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+  .edu-degree { font-size: 13px; font-weight: 500; color: var(--text); }
+  .edu-uni { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .edu-year { font-family: var(--mono); font-size: 11px; color: var(--accent); margin-top: 4px; }
+
+  /* SKILLS */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .skill-cell {
+    background: var(--bg-card);
+    padding: 1.5rem;
+    transition: background 0.2s;
+  }
+  .skill-cell:hover { background: var(--bg-card2); }
+  .skill-category {
+    font-family: var(--mono); font-size: 10px;
+    color: var(--accent); letter-spacing: 0.12em;
+    text-transform: uppercase; margin-bottom: 0.8rem;
+  }
+  .skill-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 100px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: var(--mono);
+  }
+  .tag.hot {
+    background: var(--accent-soft);
+    border-color: rgba(124,111,247,0.3);
+    color: #A78BFA;
+  }
+  .tag.green {
+    background: var(--green-soft);
+    border-color: rgba(63,207,142,0.2);
+    color: var(--green);
+  }
+
+  /* EXPERIENCE */
+  .timeline { position: relative; }
+  .timeline::before {
+    content: '';
+    position: absolute; left: 0; top: 8px; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+  }
+  .timeline-item {
+    padding-left: 2.5rem;
+    padding-bottom: 3.5rem;
+    position: relative;
+  }
+  .timeline-item:last-child { padding-bottom: 0; }
+  .timeline-dot {
+    position: absolute; left: -4px; top: 8px;
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+  }
+  .timeline-item.current .timeline-dot {
+    background: var(--green);
+    box-shadow: 0 0 12px var(--green);
+  }
+  .tl-header {
+    display: flex; align-items: flex-start;
+    justify-content: space-between; gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .tl-role { font-size: 16px; font-weight: 500; color: var(--text); }
+  .tl-company {
+    font-size: 13px; color: var(--accent);
+    font-family: var(--mono); margin-top: 2px;
+  }
+  .tl-period {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--text-dim);
+    white-space: nowrap;
+    padding-top: 4px;
+  }
+  .tl-desc {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.8;
+    margin-top: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .tl-tech { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  /* PROJECTS */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.25rem;
+  }
+  .project-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.75rem;
+    transition: border-color 0.25s, transform 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .project-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+  .project-card:hover { border-color: rgba(124,111,247,0.3); transform: translateY(-3px); }
+  .project-card:hover::before { opacity: 1; }
+  .project-card.green::before { background: var(--green); }
+  .project-card.amber::before { background: var(--amber); }
+  .project-tag {
+    font-family: var(--mono); font-size: 10px;
+    color: var(--text-dim); letter-spacing: 0.12em;
+    text-transform: uppercase; margin-bottom: 1rem;
+  }
+  .project-title { font-size: 17px; font-weight: 500; margin-bottom: 0.6rem; }
+  .project-desc { font-size: 13px; color: var(--text-muted); line-height: 1.75; margin-bottom: 1.25rem; }
+  .project-tech { display: flex; flex-wrap: wrap; gap: 5px; }
+
+  /* CONTACT */
+  .contact-wrap {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 4rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .contact-wrap::before {
+    content: '';
+    position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .contact-wrap h2 { font-size: 2rem; font-weight: 300; margin-bottom: 0.5rem; }
+  .contact-wrap h2 strong { font-weight: 600; }
+  .contact-sub { color: var(--text-muted); margin-bottom: 2.5rem; }
+  .contact-links { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+  .contact-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 20px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px; color: var(--text-muted);
+    text-decoration: none;
+    transition: all 0.2s;
+    font-family: var(--mono);
+  }
+  .contact-item:hover { border-color: var(--accent); color: var(--accent); }
+  .contact-icon { font-size: 15px; }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    border-top: 1px solid var(--border);
+  }
+
+  /* DIVIDER */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 0 1.25rem; }
+    .nav-links { display: none; }
+    section { padding: 5rem 1.25rem; }
+    .hero-stats { gap: 1.5rem; flex-wrap: wrap; }
+    .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+    .tl-header { flex-direction: column; gap: 0.25rem; }
+    .contact-wrap { padding: 2.5rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo">vm_portfolio.ai</span>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Esperienza</a></li>
+    <li><a href="#projects">Progetti</a></li>
+    <li><a href="#contact">Contatti</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag">Disponibile per opportunità</div>
+  <h1>Valeria<br><strong>Mastropasqua</strong></h1>
+  <p class="hero-sub">
+    Software Engineer & AI Engineer con 6+ anni di esperienza.
+    Costruisco applicazioni intelligenti integrando LLM, automazioni e analisi dei dati —
+    attualmente in Bosch, in parallelo alla Laurea Magistrale in Data Science.
+  </p>
+  <div class="hero-cta">
+    <a href="#contact" class="btn btn-primary">Contattami</a>
+    <a href="#experience" class="btn btn-outline">Vedi l'esperienza →</a>
+  </div>
+  <div class="hero-stats">
+    <div>
+      <div class="stat-num">6<span>+</span></div>
+      <div class="stat-label">anni di esperienza</div>
+    </div>
+    <div>
+      <div class="stat-num">4</div>
+      <div class="stat-label">aziende enterprise</div>
+    </div>
+    <div>
+      <div class="stat-num">∞</div>
+      <div class="stat-label">righe di codice</div>
+    </div>
+    <div>
+      <div class="stat-num">1</div>
+      <div class="stat-label">laurea magistrale in corso</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ABOUT -->
+<section id="about">
+  <p class="section-eyebrow">// 01 — profilo</p>
+  <h2 class="section-title">Chi sono e<br><strong>cosa costruisco</strong></h2>
+  <div class="about-grid">
+    <div class="about-text">
+      <p>
+        Sono una <strong>Software Engineer con un'anima da AI Engineer</strong>: ho iniziato costruendo portali web in Angular per banche e pharma, e negli anni ho consolidato un profilo full-stack — fino ad arrivare a integrare modelli di intelligenza artificiale in prodotti reali in Bosch.
+      </p>
+      <p>
+        Lavoro su <strong>integrazione di LLM, prompt engineering e automazione dei processi</strong> in Python, affiancando uno stack front-end solido in React e una conoscenza approfondita dei database e delle architetture enterprise.
+      </p>
+      <p>
+        In parallelo, sto completando la <strong>Laurea Magistrale in Data Science</strong> all'Università di Bari, con focus su machine learning, statistica e data engineering — perché voglio capire l'AI dall'interno, non solo usarla.
+      </p>
+      <p>
+        Ho lavorato in ambienti ad alta complessità — EY, Reply, Walgreens, Bosch — e so muovermi tra consulenza, prodotto e team cross-funzionali con metodo Agile.
+      </p>
+    </div>
+    <div>
+      <div class="about-card">
+        <div class="about-card-title">// formazione</div>
+        <div class="edu-item">
+          <div class="edu-degree">Laurea Magistrale in Data Science</div>
+          <div class="edu-uni">Università degli Studi di Bari Aldo Moro</div>
+          <div class="edu-year">2025 → in corso</div>
+        </div>
+        <div class="edu-item">
+          <div class="edu-degree">Laurea in Informatica e TPS</div>
+          <div class="edu-uni">Università degli Studi di Bari Aldo Moro</div>
+          <div class="edu-year">Completata</div>
+        </div>
+        <div class="edu-item">
+          <div class="edu-degree">Lingue</div>
+          <div class="edu-uni">Italiano (madre) · Inglese B1 · Francese A1</div>
+          <div class="edu-year">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- SKILLS -->
+<section id="skills">
+  <p class="section-eyebrow">// 02 — competenze</p>
+  <h2 class="section-title">Stack tecnico e<br><strong>aree di specializzazione</strong></h2>
+  <div class="skills-grid">
+    <div class="skill-cell">
+      <div class="skill-category">AI & LLM</div>
+      <div class="skill-tags">
+        <span class="tag hot">LLM Integration</span>
+        <span class="tag hot">Prompt Engineering</span>
+        <span class="tag hot">Python AI</span>
+        <span class="tag">scikit-learn</span>
+        <span class="tag">pandas</span>
+        <span class="tag">NumPy</span>
+      </div>
+    </div>
+    <div class="skill-cell">
+      <div class="skill-category">Front-End</div>
+      <div class="skill-tags">
+        <span class="tag green">React</span>
+        <span class="tag green">Angular 19+</span>
+        <span class="tag">TypeScript</span>
+        <span class="tag">Flutter</span>
+        <span class="tag">HTML5/CSS3</span>
+        <span class="tag">Bootstrap</span>
+      </div>
+    </div>
+    <div class="skill-cell">
+      <div class="skill-category">Back-End</div>
+      <div class="skill-tags">
+        <span class="tag">Python</span>
+        <span class="tag">Java 21</span>
+        <span class="tag">Spring Boot</span>
+        <span class="tag">Hibernate</span>
+        <span class="tag">FastAPI</span>
+        <span class="tag">REST API</span>
+      </div>
+    </div>
+    <div class="skill-cell">
+      <div class="skill-category">Database</div>
+      <div class="skill-tags">
+        <span class="tag">PostgreSQL</span>
+        <span class="tag">MySQL</span>
+        <span class="tag">MS SQL Server</span>
+        <span class="tag">IBM DB2 400</span>
+        <span class="tag">PgAdmin4</span>
+        <span class="tag">DBeaver</span>
+      </div>
+    </div>
+    <div class="skill-cell">
+      <div class="skill-category">DevOps & Tools</div>
+      <div class="skill-tags">
+        <span class="tag">Git / GitHub</span>
+        <span class="tag">GitLab</span>
+        <span class="tag">Jira</span>
+        <span class="tag">Swagger</span>
+        <span class="tag">Postman</span>
+        <span class="tag">SonarQube</span>
+      </div>
+    </div>
+    <div class="skill-cell">
+      <div class="skill-category">Data & BI</div>
+      <div class="skill-tags">
+        <span class="tag">Power BI</span>
+        <span class="tag">DAX</span>
+        <span class="tag">Excel avanzato</span>
+        <span class="tag">Blue Prism (RPA)</span>
+        <span class="tag">SAP</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <p class="section-eyebrow">// 03 — esperienza</p>
+  <h2 class="section-title">Percorso<br><strong>professionale</strong></h2>
+  <div class="timeline">
+
+    <div class="timeline-item current">
+      <div class="timeline-dot"></div>
+      <div class="tl-header">
+        <div>
+          <div class="tl-role">Software Developer & AI Engineer</div>
+          <div class="tl-company">Bosch</div>
+        </div>
+        <div class="tl-period">Gen 2026 → Presente</div>
+      </div>
+      <p class="tl-desc">
+        Sviluppo di applicazioni web in React e soluzioni AI in Python per prodotti proprietari Bosch.
+        Integrazione di modelli LLM, automazione di processi e analisi dei dati in contesto enterprise manifatturiero.
+        Ciclo di sviluppo gestito via Jira, GitHub e Swagger in team cross-funzionale Agile.
+      </p>
+      <div class="tl-tech">
+        <span class="tag hot">LLM Integration</span>
+        <span class="tag green">React</span>
+        <span class="tag">Python</span>
+        <span class="tag">GitHub</span>
+        <span class="tag">Swagger</span>
+        <span class="tag">Agile</span>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="tl-header">
+        <div>
+          <div class="tl-role">Software Engineer</div>
+          <div class="tl-company">Serlab</div>
+        </div>
+        <div class="tl-period">Gen 2025 → Dic 2025</div>
+      </div>
+      <p class="tl-desc">
+        Sviluppo multipiattaforma mobile con Flutter e back-end Java 21 / Spring Boot.
+        Gestione di database eterogenei (PostgreSQL, MS SQL, IBM DB2) e interfacce web con Angular 19+.
+        Cerimonie SCRUM complete in team prodotto.
+      </p>
+      <div class="tl-tech">
+        <span class="tag">Flutter</span>
+        <span class="tag green">Angular 19+</span>
+        <span class="tag">Java 21</span>
+        <span class="tag">Spring Boot</span>
+        <span class="tag">PostgreSQL</span>
+        <span class="tag">SCRUM</span>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="tl-header">
+        <div>
+          <div class="tl-role">Software Engineer — Consulente</div>
+          <div class="tl-company">Gruppo ISC → Reply · Relatech/Walgreens</div>
+        </div>
+        <div class="tl-period">Gen 2022 → Dic 2024</div>
+      </div>
+      <p class="tl-desc">
+        Consulenza enterprise in ambito finanziario (Reply) e farmaceutico (Relatech/Walgreens).
+        Sviluppo portali web Angular per banking, investment e supply chain farmaceutica.
+        Progettazione schemi database e documentazione tecnica di prodotto.
+      </p>
+      <div class="tl-tech">
+        <span class="tag green">Angular</span>
+        <span class="tag">TypeScript</span>
+        <span class="tag">Bootstrap</span>
+        <span class="tag">PostgreSQL</span>
+        <span class="tag">MySQL</span>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="tl-header">
+        <div>
+          <div class="tl-role">ICT Consultant & IT Auditor</div>
+          <div class="tl-company">EY S.p.A.</div>
+        </div>
+        <div class="tl-period">Feb 2020 → Dic 2022</div>
+      </div>
+      <p class="tl-desc">
+        Front-end development in Angular 9 e automazione RPA con Blue Prism su portali SAP.
+        IT Audit presso clienti enterprise in settori automotive, farmaceutico e banking:
+        verifica controlli IT, conformità processi e analisi dei rischi tecnologici.
+      </p>
+      <div class="tl-tech">
+        <span class="tag">Angular 9</span>
+        <span class="tag">Blue Prism</span>
+        <span class="tag">SAP</span>
+        <span class="tag">PostgreSQL</span>
+        <span class="tag">IT Audit</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- PROJECTS -->
+<section id="projects">
+  <p class="section-eyebrow">// 04 — progetti</p>
+  <h2 class="section-title">Progetti AI<br><strong>live & open source</strong></h2>
+  <div class="projects-grid">
+
+    <div class="project-card">
+      <div class="project-tag">Progetto 1 · Prompt Engineering</div>
+      <div class="project-title">DataSci Tutor AI</div>
+      <p class="project-desc">
+        Chatbot AI specializzato in Data Science e Machine Learning. Gestione della cronologia,
+        system prompt avanzato e UI configurabile. Costruito con Claude API e Streamlit.
+      </p>
+      <div class="project-tech">
+        <span class="tag hot">LLM</span>
+        <span class="tag hot">Prompt Engineering</span>
+        <span class="tag">Python</span>
+        <span class="tag">Streamlit</span>
+      </div>
+      <div style="margin-top:1rem; display:flex; gap:0.75rem;">
+        <a href="https://valeria-datasci-tutor.streamlit.app/" target="_blank" class="btn btn-primary" style="font-size:12px; padding:7px 14px;">▶ Demo live</a>
+        <a href="https://github.com/valeriamastropasqua/ai-portfolio" target="_blank" class="btn btn-outline" style="font-size:12px; padding:7px 14px;">GitHub</a>
+      </div>
+    </div>
+
+    <div class="project-card green">
+      <div class="project-tag">Progetto 2 · AI + Data Analysis</div>
+      <div class="project-title">Data Analyst AI</div>
+      <p class="project-desc">
+        Tool che analizza qualsiasi CSV con pandas e genera insight in linguaggio naturale tramite LLM.
+        Grafici interattivi con Plotly e analisi automatica delle correlazioni.
+      </p>
+      <div class="project-tech">
+        <span class="tag hot">LLM + dati</span>
+        <span class="tag">pandas</span>
+        <span class="tag">Plotly</span>
+        <span class="tag">Python</span>
+      </div>
+      <div style="margin-top:1rem; display:flex; gap:0.75rem;">
+        <a href="https://valeria-data-analyst.streamlit.app/" target="_blank" class="btn btn-primary" style="font-size:12px; padding:7px 14px;">▶ Demo live</a>
+        <a href="https://github.com/valeriamastropasqua/ai-portfolio" target="_blank" class="btn btn-outline" style="font-size:12px; padding:7px 14px;">GitHub</a>
+      </div>
+    </div>
+
+    <div class="project-card amber">
+      <div class="project-tag">Progetto 3 · RAG</div>
+      <div class="project-title">RAG Assistant</div>
+      <p class="project-desc">
+        Chatbot che risponde usando esclusivamente i documenti caricati dall'utente (PDF/TXT).
+        Implementa embeddings, vector database ChromaDB e ricerca semantica.
+      </p>
+      <div class="project-tech">
+        <span class="tag hot">RAG</span>
+        <span class="tag">Embeddings</span>
+        <span class="tag">ChromaDB</span>
+        <span class="tag">Python</span>
+      </div>
+      <div style="margin-top:1rem; display:flex; gap:0.75rem;">
+        <a href="https://valeria-rag-assistant.streamlit.app/" target="_blank" class="btn btn-primary" style="font-size:12px; padding:7px 14px;">▶ Demo live</a>
+        <a href="https://github.com/valeriamastropasqua/ai-portfolio" target="_blank" class="btn btn-outline" style="font-size:12px; padding:7px 14px;">GitHub</a>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-tag">Progetto 4 · AI Agents</div>
+      <div class="project-title">AI Agent autonomo</div>
+      <p class="project-desc">
+        Agente autonomo con tool use: ricerca web, calcolatrice, lettura pagine e salvataggio note.
+        Loop pensa→agisce→osserva implementato con Anthropic tool use API.
+      </p>
+      <div class="project-tech">
+        <span class="tag hot">AI Agents</span>
+        <span class="tag hot">Tool Use</span>
+        <span class="tag">Python</span>
+        <span class="tag">Streamlit</span>
+      </div>
+      <div style="margin-top:1rem; display:flex; gap:0.75rem;">
+        <a href="https://valeria-ai-agent.streamlit.app/" target="_blank" class="btn btn-primary" style="font-size:12px; padding:7px 14px;">▶ Demo live</a>
+        <a href="https://github.com/valeriamastropasqua/ai-portfolio" target="_blank" class="btn btn-outline" style="font-size:12px; padding:7px 14px;">GitHub</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-wrap">
+    <p class="section-eyebrow" style="margin-bottom: 1rem;">// 05 — contatti</p>
+    <h2>Costruiamo qualcosa<br><strong>insieme</strong></h2>
+    <p class="contact-sub">Sono disponibile per nuove opportunità, collaborazioni e progetti interessanti.</p>
+    <div class="contact-links">
+      <a href="mailto:mastropasqua.valeria@gmail.com" class="contact-item">
+        <span class="contact-icon">✉</span>
+        mastropasqua.valeria@gmail.com
+      </a>
+      <a href="tel:+393405214596" class="contact-item">
+        <span class="contact-icon">☎</span>
+        +39 340 521 4596
+      </a>
+      <a href="https://www.linkedin.com/in/valeria-mastropasqua-731953199/" target="_blank" class="contact-item">
+        <span class="contact-icon">in</span>
+        LinkedIn
+      </a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>© 2026 Valeria Mastropasqua · Bari, Italia · Costruito con cura</p>
+</footer>
+
+</body>
+</html>
