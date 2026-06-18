@@ -1,0 +1,15 @@
+anthropic
+streamlit
+pandas
+plotly
+openpyxl
+chromadb
+sentence-transformers
+pypdf
+langchain
+langchain-anthropic
+langchain-community
+duckduckgo-search
+requests
+beautifulsoup4
+python-dotenv
