@@ -1,11 +1,3 @@
-"""
-PROGETTO 3 — RAG Assistant (versione senza chromadb)
-Portfolio AI Engineer · Valeria Mastropasqua
-
-Implementa RAG usando solo numpy per la similarità coseno,
-senza dipendenze esterne problematiche.
-"""
-
 import os
 import re
 import math
@@ -45,7 +37,6 @@ st.markdown("""
 st.markdown('<h1 class="main-title">RAG <span>Assistant</span></h1>', unsafe_allow_html=True)
 st.markdown('<p class="subtitle">Carica i tuoi documenti e chatta con loro usando l\'AI</p>', unsafe_allow_html=True)
 
-# ─── Sidebar ──────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("### ⚙️ Configurazione")
     api_key = st.text_input("Anthropic API Key", type="password",
@@ -64,26 +55,23 @@ with st.sidebar:
         st.session_state.clear()
         st.rerun()
 
-# ─── Stato sessione ───────────────────────────────────────────
 if "chunks" not in st.session_state:
-    st.session_state.chunks = []       # lista di {"testo": ..., "fonte": ...}
+    st.session_state.chunks = []
 if "tfidf" not in st.session_state:
-    st.session_state.tfidf = None      # matrice TF-IDF
+    st.session_state.tfidf = None
 if "vocab" not in st.session_state:
-    st.session_state.vocab = {}        # vocabolario
+    st.session_state.vocab = {}
 if "documenti" not in st.session_state:
     st.session_state.documenti = []
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-# ─── Funzioni RAG senza dipendenze esterne ───────────────────
 
 def tokenizza(testo: str) -> list[str]:
-    """Tokenizza il testo in parole lowercase."""
     return re.findall(r'\b[a-zA-ZàèéìíîòóùúÀÈÉÌÍÎÒÓÙÚ]{2,}\b', testo.lower())
 
+
 def dividi_in_chunks(testo: str, chunk_size: int = 200, overlap: int = 30) -> list[str]:
-    """Divide il testo in chunks sovrapposti."""
     parole = testo.split()
     chunks = []
     i = 0
@@ -94,25 +82,15 @@ def dividi_in_chunks(testo: str, chunk_size: int = 200, overlap: int = 30) -> li
         i += chunk_size - overlap
     return chunks
 
+
 def costruisci_tfidf(chunks: list[dict]) -> tuple[dict, list[dict]]:
-    """
-    Costruisce la matrice TF-IDF per tutti i chunks.
-    
-    TF-IDF = Term Frequency × Inverse Document Frequency
-    - TF: quante volte una parola appare in un chunk
-    - IDF: log(N/df) — penalizza parole comuni in tutti i docs
-    
-    Questo è il cuore della ricerca semantica semplice:
-    invece di vettori neurali, usiamo frequenze statistiche.
-    """
     n = len(chunks)
     if n == 0:
         return {}, []
 
-    # Costruisci vocabolario e document frequency
     vocab = {}
-    df = {}  # document frequency per parola
-    
+    df = {}
+
     tokenizzati = []
     for chunk in chunks:
         tokens = tokenizza(chunk["testo"])
@@ -123,21 +101,18 @@ def costruisci_tfidf(chunks: list[dict]) -> tuple[dict, list[dict]]:
                 vocab[parola] = len(vocab)
             df[parola] = df.get(parola, 0) + 1
 
-    # Calcola vettori TF-IDF per ogni chunk
     vettori = []
     for tokens in tokenizzati:
         vec = {}
         tf_raw = {}
         for t in tokens:
             tf_raw[t] = tf_raw.get(t, 0) + 1
-        
-        # TF normalizzato × IDF
+
         for parola, count in tf_raw.items():
             tf = count / len(tokens) if tokens else 0
             idf = math.log(n / df.get(parola, 1))
             vec[vocab[parola]] = tf * idf
-        
-        # Normalizza il vettore
+
         norma = math.sqrt(sum(v**2 for v in vec.values()))
         if norma > 0:
             vec = {k: v/norma for k, v in vec.items()}
@@ -145,38 +120,33 @@ def costruisci_tfidf(chunks: list[dict]) -> tuple[dict, list[dict]]:
 
     return vocab, vettori
 
-def similarita_coseno(vec1: dict, vec2: dict) -> float:
-    """Calcola la similarità coseno tra due vettori sparsi."""
-    prodotto = sum(vec1.get(k, 0) * v for k, v in vec2.items())
-    return prodotto  # già normalizzati
 
-def cerca_chunks(domanda: str, vocab: dict, vettori: list[dict], 
+def similarita_coseno(vec1: dict, vec2: dict) -> float:
+    return sum(vec1.get(k, 0) * v for k, v in vec2.items())
+
+
+def cerca_chunks(domanda: str, vocab: dict, vettori: list[dict],
                   chunks: list[dict], n: int = 4) -> list[dict]:
-    """Trova i chunks più simili alla domanda."""
     if not vettori:
         return []
-    
-    # Vettorizza la domanda
+
     tokens = tokenizza(domanda)
     vec_query = {}
     for t in tokens:
         if t in vocab:
             vec_query[vocab[t]] = vec_query.get(vocab[t], 0) + 1
-    
-    # Normalizza
+
     norma = math.sqrt(sum(v**2 for v in vec_query.values()))
     if norma > 0:
         vec_query = {k: v/norma for k, v in vec_query.items()}
-    
-    # Calcola similarità con tutti i chunks
+
     scores = []
     for i, vec in enumerate(vettori):
         sim = similarita_coseno(vec_query, vec)
         scores.append((sim, i))
-    
-    # Ordina per similarità decrescente
+
     scores.sort(reverse=True)
-    
+
     risultati = []
     for sim, idx in scores[:n]:
         if sim > 0:
@@ -185,28 +155,27 @@ def cerca_chunks(domanda: str, vocab: dict, vettori: list[dict],
                 "fonte": chunks[idx]["fonte"],
                 "similarita": round(sim * 100, 1)
             })
-    
+
     return risultati
 
+
 def aggiungi_documento(nome: str, testo: str):
-    """Aggiunge un documento e ricalcola TF-IDF."""
     nuovi_chunks = dividi_in_chunks(testo)
     for chunk in nuovi_chunks:
         st.session_state.chunks.append({"testo": chunk, "fonte": nome})
-    
-    # Ricalcola TF-IDF su tutti i chunks
+
     vocab, vettori = costruisci_tfidf(st.session_state.chunks)
     st.session_state.vocab = vocab
     st.session_state.tfidf = vettori
-    
+
     return len(nuovi_chunks)
 
+
 def genera_risposta(domanda: str, chunks_rilevanti: list[dict], api_key: str) -> str:
-    """Genera risposta con Claude usando i chunks come contesto."""
     contesto = "\n\n---\n\n".join([
         f"[Fonte: {c['fonte']}]\n{c['testo']}" for c in chunks_rilevanti
     ])
-    
+
     prompt = f"""Sei un assistente che risponde alle domande basandosi ESCLUSIVAMENTE 
 sui documenti forniti. Non inventare informazioni non presenti nel contesto.
 Se la risposta non è nei documenti, dillo chiaramente.
@@ -227,7 +196,7 @@ Cita la fonte quando possibile."""
     )
     return response.content[0].text
 
-# ─── Layout principale ────────────────────────────────────────
+
 col_sx, col_dx = st.columns([1, 2])
 
 with col_sx:
@@ -271,7 +240,7 @@ trasparenza e impatto sociale. La sicurezza dei sistemi AI è fondamentale.
             st.success(f"Documento aggiunto! ({n} chunks)")
 
     st.markdown("---")
-    
+
     uploaded = st.file_uploader("Carica PDF o testo", type=["pdf", "txt"],
                                  accept_multiple_files=True)
     if uploaded:
@@ -283,7 +252,7 @@ trasparenza e impatto sociale. La sicurezza dei sistemi AI è fondamentale.
                         testo = "\n".join(p.extract_text() or "" for p in reader.pages)
                     else:
                         testo = f.read().decode("utf-8", errors="ignore")
-                    
+
                     if testo.strip():
                         n = aggiungi_documento(f.name, testo)
                         st.session_state.documenti.append(f.name)

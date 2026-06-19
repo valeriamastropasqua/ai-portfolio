@@ -1,40 +1,13 @@
-"""
-╔══════════════════════════════════════════════════════════════╗
-║  PROGETTO 1 — Chatbot AI personalizzato                      ║
-║  Portfolio AI Engineer · Valeria Mastropasqua                ║
-╚══════════════════════════════════════════════════════════════╝
-
-COSA IMPARI:
-  - Chiamare l'API di Anthropic (Claude)
-  - Gestire la cronologia della conversazione
-  - Prompt engineering: dare una "persona" all'AI
-  - Costruire una UI con Streamlit
-
-INSTALLAZIONE (esegui nel terminale):
-  pip install anthropic streamlit
-
-CONFIGURAZIONE:
-  Crea un file .env nella stessa cartella con:
-    ANTHROPIC_API_KEY=sk-ant-...
-  Oppure esporta la variabile d'ambiente:
-    export ANTHROPIC_API_KEY=sk-ant-...
-
-AVVIO:
-  streamlit run app.py
-"""
-
 import os
 import streamlit as st
 import anthropic
 
-# ─── Configurazione pagina ────────────────────────────────────
 st.set_page_config(
     page_title="DataSci Tutor · Valeria AI",
     page_icon="🎓",
     layout="centered",
 )
 
-# ─── CSS personalizzato ───────────────────────────────────────
 st.markdown("""
 <style>
     .stApp { background-color: #0D0D0F; color: #F0EFF4; }
@@ -55,7 +28,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ─── Header ───────────────────────────────────────────────────
 st.markdown("""
 <div class="main-header">
     <h1>DataSci <span>Tutor</span> AI</h1>
@@ -63,9 +35,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ─── System prompt: la "persona" dell'assistente ─────────────
-# Questo è il cuore del prompt engineering:
-# stai dicendo all'AI CHI è, COME si comporta e COSA sa.
 SYSTEM_PROMPT = """Sei DataSci Tutor, un assistente AI esperto in Data Science, 
 Machine Learning e Intelligenza Artificiale, creato da Valeria Mastropasqua 
 come progetto portfolio.
@@ -89,16 +58,15 @@ Le tue aree di expertise:
 Se ti chiedono qualcosa fuori dal tuo dominio, reindirizza gentilmente 
 verso argomenti di Data Science e AI."""
 
-# ─── Client Anthropic ─────────────────────────────────────────
-# Legge la API key dall'environment o dalla sidebar
+
 @st.cache_resource
 def get_client(api_key: str):
     return anthropic.Anthropic(api_key=api_key)
 
-# ─── Sidebar: configurazione ──────────────────────────────────
+
 with st.sidebar:
     st.markdown("### ⚙️ Configurazione")
-    
+
     api_key = st.text_input(
         "Anthropic API Key",
         type="password",
@@ -106,16 +74,16 @@ with st.sidebar:
         help="Ottieni la tua key su console.anthropic.com",
         placeholder="sk-ant-..."
     )
-    
+
     st.markdown("---")
     st.markdown("### 🎛️ Parametri")
-    
+
     model = st.selectbox(
         "Modello",
         ["claude-haiku-4-5-20251001", "claude-sonnet-4-6"],
         help="Haiku è più veloce ed economico, Sonnet è più potente"
     )
-    
+
     max_tokens = st.slider(
         "Lunghezza massima risposta",
         min_value=256,
@@ -123,10 +91,10 @@ with st.sidebar:
         value=1024,
         step=128,
     )
-    
+
     st.markdown("---")
     st.markdown("### 💡 Domande di esempio")
-    
+
     examples = [
         "Cos'è il gradient descent?",
         "Spiegami la differenza tra overfitting e underfitting",
@@ -134,7 +102,7 @@ with st.sidebar:
         "Scrivimi un esempio di regressione logistica in Python",
         "Cosa sono i vettori di embedding?",
     ]
-    
+
     for ex in examples:
         if st.button(ex, use_container_width=True, key=ex):
             st.session_state.pending_message = ex
@@ -144,56 +112,44 @@ with st.sidebar:
         st.session_state.messages = []
         st.rerun()
 
-# ─── Stato della sessione ─────────────────────────────────────
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# ─── Visualizza la cronologia ─────────────────────────────────
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-# ─── Gestisci input da pulsanti esempio ──────────────────────
 if "pending_message" in st.session_state:
     user_input = st.session_state.pop("pending_message")
 else:
     user_input = st.chat_input("Chiedi qualcosa su Data Science o AI...")
 
-# ─── Logica principale della chat ────────────────────────────
 if user_input:
     if not api_key:
         st.error("⚠️ Inserisci la tua Anthropic API Key nella sidebar per iniziare.")
         st.stop()
 
-    # Mostra il messaggio dell'utente
     with st.chat_message("user"):
         st.markdown(user_input)
     st.session_state.messages.append({"role": "user", "content": user_input})
 
-    # Chiama l'API con tutta la cronologia
-    # CONCETTO CHIAVE: ogni volta mandiamo TUTTA la storia della conversazione.
-    # L'API di Claude è stateless — non ricorda le conversazioni precedenti.
-    # Sei tu a dover mantenere e inviare la cronologia ad ogni chiamata.
     with st.chat_message("assistant"):
         with st.spinner("Sto pensando..."):
             client = get_client(api_key)
-            
+
             response = client.messages.create(
                 model=model,
                 max_tokens=max_tokens,
-                system=SYSTEM_PROMPT,          # la "persona" dell'AI
-                messages=st.session_state.messages,  # tutta la storia
+                system=SYSTEM_PROMPT,
+                messages=st.session_state.messages,
             )
-            
-            # Estrai il testo dalla risposta
+
             reply = response.content[0].text
-        
+
         st.markdown(reply)
-    
-    # Salva la risposta nella cronologia
+
     st.session_state.messages.append({"role": "assistant", "content": reply})
-    
-    # Mostra statistiche uso token (utile per capire i costi)
+
     with st.expander("📊 Dettagli chiamata API"):
         col1, col2, col3 = st.columns(3)
         col1.metric("Token input", response.usage.input_tokens)

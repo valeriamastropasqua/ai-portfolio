@@ -1,22 +1,3 @@
-"""
-╔══════════════════════════════════════════════════════════════╗
-║  PROGETTO 2 — Analisi dati con AI                            ║
-║  Portfolio AI Engineer · Valeria Mastropasqua                ║
-╚══════════════════════════════════════════════════════════════╝
-
-COSA IMPARI:
-  - Combinare pandas con un LLM per analisi in linguaggio naturale
-  - Inviare dati strutturati all'AI (tabelle, statistiche)
-  - Generare insight automatici da qualsiasi CSV
-  - Visualizzare dati con matplotlib/plotly in Streamlit
-
-INSTALLAZIONE:
-  pip install anthropic streamlit pandas plotly openpyxl
-
-AVVIO:
-  streamlit run app.py
-"""
-
 import os
 import io
 import anthropic
@@ -24,7 +5,6 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-# ─── Configurazione pagina ────────────────────────────────────
 st.set_page_config(
     page_title="Data Analyst AI · Valeria",
     page_icon="📊",
@@ -49,7 +29,6 @@ st.markdown("""
 st.markdown('<h1 class="main-title">Data Analyst <span>AI</span></h1>', unsafe_allow_html=True)
 st.markdown('<p class="subtitle">Carica un CSV e ottieni analisi e insight in linguaggio naturale</p>', unsafe_allow_html=True)
 
-# ─── Sidebar ──────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("### ⚙️ Configurazione")
     api_key = st.text_input(
@@ -61,13 +40,13 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("### 📁 Dataset di esempio")
     st.markdown("Non hai un CSV? Usa uno di questi:")
-    
+
     use_sample = st.selectbox(
         "Dataset di esempio",
         ["Nessuno — carico il mio", "Vendite mensili", "Studenti e voti", "Temperatura città"]
     )
 
-# ─── Genera dataset di esempio ───────────────────────────────
+
 def get_sample_df(name: str) -> pd.DataFrame:
     if name == "Vendite mensili":
         return pd.DataFrame({
@@ -101,7 +80,7 @@ def get_sample_df(name: str) -> pd.DataFrame:
         })
     return None
 
-# ─── Caricamento dati ─────────────────────────────────────────
+
 df = None
 
 if use_sample != "Nessuno — carico il mio":
@@ -123,50 +102,45 @@ else:
         except Exception as e:
             st.error(f"Errore nel caricamento: {e}")
 
-# ─── Analisi e visualizzazione ───────────────────────────────
 if df is not None:
-    
-    # Tabs per organizzare il contenuto
     tab1, tab2, tab3 = st.tabs(["📋 Dati", "📈 Grafici", "🤖 Analisi AI"])
-    
-    # ── Tab 1: Anteprima dati ─────────────────────────────────
+
     with tab1:
         col1, col2, col3, col4 = st.columns(4)
         col1.metric("Righe", df.shape[0])
         col2.metric("Colonne", df.shape[1])
         col3.metric("Valori mancanti", df.isnull().sum().sum())
         col4.metric("Colonne numeriche", len(df.select_dtypes(include='number').columns))
-        
+
         st.markdown("#### Anteprima")
         st.dataframe(df.head(20), use_container_width=True)
-        
+
         st.markdown("#### Statistiche descrittive")
         st.dataframe(df.describe(), use_container_width=True)
-    
-    # ── Tab 2: Grafici automatici ─────────────────────────────
+
     with tab2:
         numeric_cols = df.select_dtypes(include='number').columns.tolist()
         categorical_cols = df.select_dtypes(include='object').columns.tolist()
-        
+
         if not numeric_cols:
             st.warning("Nessuna colonna numerica trovata per i grafici.")
         else:
             col_left, col_right = st.columns(2)
-            
+
             with col_left:
                 st.markdown("#### Distribuzione")
                 selected_col = st.selectbox("Colonna", numeric_cols, key="dist_col")
                 fig = px.histogram(df, x=selected_col, nbins=20,
                                    color_discrete_sequence=["#7C6FF7"])
-                fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", 
+                fig.update_layout(paper_bgcolor="rgba(0,0,0,0)",
                                   plot_bgcolor="rgba(0,0,0,0)")
                 st.plotly_chart(fig, use_container_width=True)
-            
+
             with col_right:
                 if len(numeric_cols) >= 2:
                     st.markdown("#### Correlazione")
                     x_col = st.selectbox("Asse X", numeric_cols, key="x_col")
-                    y_col = st.selectbox("Asse Y", numeric_cols, 
+                    y_col = st.selectbox("Asse Y", numeric_cols,
                                          index=min(1, len(numeric_cols)-1), key="y_col")
                     color_col = categorical_cols[0] if categorical_cols else None
                     fig2 = px.scatter(df, x=x_col, y=y_col, color=color_col,
@@ -174,8 +148,7 @@ if df is not None:
                     fig2.update_layout(paper_bgcolor="rgba(0,0,0,0)",
                                        plot_bgcolor="rgba(0,0,0,0)")
                     st.plotly_chart(fig2, use_container_width=True)
-            
-            # Heatmap correlazione
+
             if len(numeric_cols) >= 3:
                 st.markdown("#### Matrice di correlazione")
                 corr = df[numeric_cols].corr()
@@ -183,12 +156,10 @@ if df is not None:
                                   color_continuous_scale="RdBu_r")
                 fig3.update_layout(paper_bgcolor="rgba(0,0,0,0)")
                 st.plotly_chart(fig3, use_container_width=True)
-    
-    # ── Tab 3: Analisi AI ─────────────────────────────────────
+
     with tab3:
         st.markdown("#### Chiedi all'AI qualcosa sui tuoi dati")
-        
-        # Domande predefinite + input libero
+
         preset_questions = [
             "Analizza questo dataset e dimmi i 5 insight più importanti",
             "Ci sono anomalie o valori anomali nei dati?",
@@ -196,36 +167,31 @@ if df is not None:
             "Cosa mi consiglieresti di approfondire con questi dati?",
             "Scrivi un breve report esecutivo su questi dati",
         ]
-        
+
         selected_preset = st.selectbox(
-            "Domande rapide", 
+            "Domande rapide",
             ["— Scegli una domanda —"] + preset_questions
         )
-        
+
         user_question = st.text_area(
             "Oppure scrivi la tua domanda:",
             value=selected_preset if selected_preset != "— Scegli una domanda —" else "",
             height=80,
             placeholder="Es: Qual è il mese con più vendite? Ci sono trend stagionali?"
         )
-        
+
         analyze_btn = st.button("🤖 Analizza con AI", type="primary", use_container_width=True)
-        
+
         if analyze_btn:
             if not api_key:
                 st.error("Inserisci la API Key nella sidebar.")
             elif not user_question.strip():
                 st.warning("Scrivi una domanda prima di procedere.")
             else:
-                # ── Prepara il contesto per l'AI ─────────────
-                # CONCETTO CHIAVE: convertiamo il DataFrame in testo
-                # che l'AI può leggere e analizzare.
-                # Mandiamo: statistiche, prime righe, e la domanda dell'utente.
-                
                 buffer = io.StringIO()
                 df.info(buf=buffer)
                 df_info = buffer.getvalue()
-                
+
                 context = f"""Hai a disposizione un dataset con queste caratteristiche:
 
 STRUTTURA:
@@ -240,7 +206,7 @@ PRIME 10 RIGHE:
 VALORI MANCANTI PER COLONNA:
 {df.isnull().sum().to_string()}
 """
-                
+
                 prompt = f"""{context}
 
 DOMANDA DELL'UTENTE:
@@ -249,7 +215,7 @@ DOMANDA DELL'UTENTE:
 Rispondi in italiano in modo chiaro e strutturato. 
 Usa bullet points e sezioni quando appropriato.
 Basa le tue osservazioni SOLO sui dati forniti, senza inventare."""
-                
+
                 with st.spinner("L'AI sta analizzando i dati..."):
                     client = anthropic.Anthropic(api_key=api_key)
                     response = client.messages.create(
@@ -257,20 +223,18 @@ Basa le tue osservazioni SOLO sui dati forniti, senza inventare."""
                         max_tokens=1500,
                         messages=[{"role": "user", "content": prompt}]
                     )
-                    
+
                     analysis = response.content[0].text
-                
+
                 st.markdown("#### Analisi AI")
                 st.markdown(analysis)
-                
-                # Mostra statistiche token
+
                 with st.expander("📊 Dettagli chiamata API"):
                     col1, col2 = st.columns(2)
                     col1.metric("Token input (dati + domanda)", response.usage.input_tokens)
                     col2.metric("Token output (risposta)", response.usage.output_tokens)
 
 else:
-    # Stato vuoto — invita l'utente a caricare dati
     st.markdown("""
     <div style="text-align:center; padding: 4rem 2rem; color: #8B8A96;">
         <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
